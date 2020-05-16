@@ -1,0 +1,3 @@
+
+mads ../src/MAIN.ASM -o:../bin/scramble_asm.xex
+
