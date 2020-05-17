@@ -59,4 +59,10 @@ dalej
 
     jsr wait
 
+
+    lda KBCODE
+    cmp #$1c
+    beq koniec
     jmp mainloop
+koniec
+    rts
