@@ -30,8 +30,6 @@ EXITVBI
 	pla
 	rti
 
-
-
 ROMOFF
 	lda #0
 	sta NMIEN   ; wylaczamy NMI 

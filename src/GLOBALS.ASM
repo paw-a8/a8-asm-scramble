@@ -21,7 +21,7 @@ COLOR2  equ $D018
 COLOR3  equ $D019
 COLOR4  equ $D01A
 
-KBCODE  equ $D01F
+KBCODE  equ $D209
 
 RANDOM  equ $D20A
 

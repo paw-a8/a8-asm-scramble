@@ -32,7 +32,9 @@ main		equ *
     jsr init
     jsr mainloop
 
-    rts
+	lda #$fd
+	sta $d301
+	jmp ($fffc)
 
 
 init
