@@ -1,10 +1,18 @@
 _vbi
 
-    lda #0
-    sta dli_color
+    lda #$e
+    sta COLOR1
+    sta dli_kolor1
 
     lda #$8c
     sta COLOR2
+    sta dli_kolor2
+
+	lda <DLIA
+	sta DLI
+	lda >DLIA
+	sta DLI+1
+
 
     ldx TIMER
     beq potimer

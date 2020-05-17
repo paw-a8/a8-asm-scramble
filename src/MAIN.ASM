@@ -15,7 +15,7 @@ TEXT2	dta "score                         fuel      "
     ICL 'ANTIC.ASM'
     ICL 'VBI.ASM'
     ICL 'LOOP.ASM'
-    ICL 'TERRAIN.ASM'
+    ICL 'WORLD.ASM'
     ICL 'TOOLS.ASM'
 
 
@@ -98,10 +98,10 @@ for_io
     lda #$e
     sta COLOR1
 
-    lda #0
+    lda #$8c
     sta COLOR2
 
-    lda #2
+    lda #0
     sta COLOR4
 
 

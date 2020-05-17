@@ -54,6 +54,7 @@ NMIEN   equ $D40E
 .zpvar ROW .byte
 .zpvar NEXTROW .byte
 
-.zpvar dli_color .byte
+.zpvar dli_kolor1 .byte
+.zpvar dli_kolor2 .byte
 
 
