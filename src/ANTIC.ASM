@@ -1,49 +1,160 @@
+;;------------------------------------------------------------------------------
+;; CUSTOM DISPLAY LISTS AND DISPLAY LIST INTERRUPTS
+;;------------------------------------------------------------------------------
+;
+;SET $E=DLADDR
+;PROC DL=*()[
+;  $70             ; EMPTY ROW
+;  $42 TEXT        ; FIRST TEXT ROW (GR.0)
+;  $D2 SCREEN      ; STARTSCREEN (GR.0) WITH HSCROL AND DLI
+;  $12 $92 $12 $92 $12 $92 $12 $92 $12 $92 $12 $12 $12
+;  $12 $12 $12 $12 $12 $92 $92 $92 $92 $92 $92 $92
+;  $41 DL          ; JUMP TO BEGINNING OF DL
+;]
+;
+
+DLADDR
 DL
     dta    $70
-    dta    $42,a(TEXT1)
+    dta    $42,a(TEXT)
     dta    $D2
 LMS
     dta    a(SCREEN)
-
-    dta    $12,$92,$12,$92,$12,$92,$12,$92,$12,$92,$12
-    dta    $12,$12,$12,$12,$92,$92,$92,$92,$92,$92,$92,$02
-    dta    $70
+    dta    $12,$92,$12,$92,$12,$92,$12,$92,$12,$92,$12,$12,$12
+    dta    $12,$12,$12,$12,$12,$92,$92,$92,$92,$92,$92,$92
     dta    $41,a(DL)
 
 
+;;------------------------------------------------------------------------------
+;
+;SET $E=DLIAADDR
+;PROC DLIA=*()[
+;  $48$A5$56$8D$0A$D4$8D$18$D0$18$69$02$8D$0A$D4$8D$18
+;  $D0$A5$56$8D$0A$D4$8D$18$D0$38$E9$02$85$56$C9$7E$D0$16
+;  $A9$0E$85$56
+;] VDSLST=DLIBADDR [
+;  $A9$00$8D$0A$D4$8D$18$D0$68$40
+;]
+;; 8C50: 48        PHA
+;; 8C51: A5 56     LDA $56
+;; 8C53: 8D 0A D4  STA $D40A   ;WSYNC
+;; 8C56: 8D 18 D0  STA $D018   ;COLPF2
+;; 8C59: 18        CLC
+;; 8C5A: 69 02     ADC #$02
+;; 8C5C: 8D 0A D4  STA $D40A   ;WSYNC
+;; 8C5F: 8D 18 D0  STA $D018   ;COLPF2
+;; 8C62: A5 56     LDA $56
+;; 8C64: 8D 0A D4  STA $D40A   ;WSYNC
+;; 8C67: 8D 18 D0  STA $D018   ;COLPF2
+;; 8C6A: 38        SEC
+;; 8C6B: E9 02     SBC #$02
+;; 8C6D: 85 56     STA $56
+;; 8C6F: C9 7E     CMP #$7E
+;; 8C71: D0 16     BNE $8C89
+;; 8C73: A9 0E     LDA #$0E
+;; 8C75: 85 56     STA $56
+;
+;; 8C77: A9 8C     LDA #$8C
+;; 8C79: 8D 01 02  STA $0201   ;VDSLST+1
+;; 8C7C: A9 A0     LDA #$A0
+;; 8C7E: 8D 00 02  STA $0200   ;VDSLST
+;
+;; 8C81: A9 00     LDA #$00
+;; 8C83: 8D 0A D4  STA $D40A   ;WSYNC
+;; 8C86: 8D 18 D0  STA $D018   ;COLPF2
+;; 8C89: 68        PLA
+;; 8C8A: 40        RTI
+;
 
+
+DLIAADDR
 DLIA
-    lda dli_kolor2
-    tax
-    dex
-    dex
-    cpx #$80
-    bne DLIA1
-    ldx #0
-DLIA1
-    stx WSYNC
-    stx COLOR2
+    lda DLICOLOR
     sta WSYNC
     sta COLOR2
-    stx WSYNC
-    stx COLOR2
-    stx dli_kolor2
-    cpx #$0
-    bne DLIA2
+    clc
+    adc #2
+    sta WSYNC
+    sta COLOR2
+    lda DLICOLOR
+    sta WSYNC
+    sta COLOR2
+    sec
+    sbc #2
+    sta DLICOLOR
+    cmp #$7E
+    bne DLIA1
+
+    lda #$E
+    sta DLICOLOR
 
     lda <DLIB
     sta DLI
     lda >DLIB
     sta DLI+1
-DLIA2
+
+    lda #0
+    sta WSYNC
+    sta COLOR2
+
+DLIA1
     jmp EXITDLI
 
 
+
+
+
+
+;;------------------------------------------------------------------------------
+;
+;SET $E=DLIBADDR
+;PROC DLIB=*()[
+;  $48$A5$56$8D$0A$D4$8D$17$D0$38$E9$02$85$56$C9$00
+;  $D0$16$A9$8A$85$56
+;] VDSLST=DLIAADDR [
+;  $A9$0E$8D$0A$D4$8D$17$D0$68$40
+;]
+;; 8CA0: 48        PHA
+;; 8CA1: A5 56     LDA $56
+;; 8CA3: 8D 0A D4  STA $D40A   ;WSYNC
+;; 8CA6: 8D 17 D0  STA $D017   ;COLPF1
+;; 8CA9: 38        SEC
+;; 8CAA: E9 02     SBC #$02
+;; 8CAC: 85 56     STA $56
+;; 8CAE: C9 00     CMP #$00
+;; 8CB0: D0 16     BNE $8CC8
+;; 8CB2: A9 8A     LDA #$8A
+;; 8CB4: 85 56     STA $56
+;
+;; 8CB6: A9 8C     LDA #$8C
+;; 8CB8: 8D 01 02  STA $0201   ;VDSLST+1
+;; 8CBB: A9 50     LDA #$50
+;; 8CBD: 8D 00 02  STA $0200   ;VDSLST
+;
+;; 8CC0: A9 0E     LDA #$0E
+;; 8CC2: 8D 0A D4  STA $D40A   ;WSYNC
+;; 8CC5: 8D 17 D0  STA $D017   ;COLPF1
+;; 8CC8: 68        PLA
+;; 8CC9: 40        RTI
+
+DLIBADDR
 DLIB
-    ldx dli_kolor1
-    stx WSYNC
-    stx COLOR1
-    dex
-    dex
-    stx dli_kolor1
+    lda DLICOLOR
+    sta WSYNC
+    sta COLOR1
+    sec
+    sbc #2
+    sta DLICOLOR
+    cmp #0
+    bne DLIB1
+    lda #$8A
+    sta DLICOLOR
+    lda <DLIA
+    sta DLI
+    lda >DLIA
+    sta DLI+1
+    lda #$E
+    sta WSYNC
+    sta COLOR1
+DLIB1
     jmp EXITDLI

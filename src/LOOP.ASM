@@ -1,68 +1,31 @@
-mainloop
-
-	lda HSCROLI
-	cmp #$ff
-	bne dalej
-
-	    jsr terrain
-
-	    lda LMS+1
-	    cmp #(>SCREEN+$02)
-	    bne dalej0
-
-		ldy #0
-		sty NEXTROW
-
-		lda #>SCREEN
-		sta LMS+1
-		lda #<SCREEN
-		sta LMS
-
-		sta SCREENI
-		lda #>SCREEN
-		clc
-		adc #$03
-		sta SCREENI+1
-
-		ldx #1
-		jsr set_tmp
-		ldy #0
-		lda #GLADE
-for_io2
-		sta (TMP),Y
-		iny
-		cpy #$2F+1
-		bcc for_io2
+;;------------------------------------------------------------------------------
+;; MAIN LOOP
+;;------------------------------------------------------------------------------
+;
+;PROC MAINLOOP=*()
+;  DO
+;    RSYNC(8)
+;    [RASTERBARON]
+;    IF HSCROLI=$B THEN TERRAIN() FI
+;    [RASTERBAROFF]
+;  OD
+;RET
 
 
-dalej0
-	    clc
-	    lda LMS
-	    adc #1
-	    sta LMS
-	    sta SCREENI
-	    lda LMS+1
-	    adc #0
-	    sta LMS+1
-	    adc #$3
-	    sta SCREENI+1
+MAINLOOP
 
-	    lda #3
-	    sta HSCROLI
+    lda #8
+    jsr RSYNC
 
-	    jmp mainloop
-dalej
+	sta WSYNC
+	lda #$8C
+	sta COLOR2
 
-	lda HSCROLI
-	dec HSCROLI
-	sta HSCROL
-
-    jsr wait
-
-
-    lda KBCODE
-    cmp #$1c
-    beq koniec
-    jmp mainloop
-koniec
-    rts
+    jsr RASTERBARON
+    lda HSCROLI
+    cmp #$B
+    bne ml1
+	jsr TERRAIN
+ml1
+    jsr RASTERBAROFF
+    jmp MAINLOOP
