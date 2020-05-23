@@ -55,13 +55,14 @@ dr1
 ;RET
 ;
 
+
 DRAWCANNONTABLE	
-    dta $ff-$30-$02,27
-    dta $ff-$60-$02,0
-    dta $ff-$30-$01,28
-    dta $ff-$60-$01,0
-    dta $ff-$30,29
-    dta $ff-$60,30
+    dta $ff-$30-$02+1,27
+    dta $ff-$60-$02+1,0
+    dta $ff-$30-$01+1,28
+    dta $ff-$60-$01+1,0
+    dta $ff-$30+1,29
+    dta $ff-$60+1,30
 
 DRAWCANNON
 
