@@ -1,3 +1,33 @@
+;                  0   1   2   3   4   5   6
+;ROWOFFSET_h dta $01,$01,$00,$00,$00,$00,$00
+;ROWOFFSET_l dta $50,$20,$F0,$C0,$90,$60,$30
+
+
+ROWOFF dta $50,$20,$F0,$C0,$90,$60,$30,$00
+
+
+
+
+DRAWNEXTROW
+	ldx NEXTROW
+
+DRAWROW
+	pha
+	lda ROWOFF,X
+	tay
+	pla
+	cpx #2
+	bcc jeden
+	sta (SCREENI),Y
+	rts
+
+jeden
+	sta (TMP),Y
+	rts
+
+
+
+
 ;;------------------------------------------------------------------------------
 ;; WORLD GENERATION PROCEDURE
 ;;------------------------------------------------------------------------------
@@ -18,6 +48,7 @@ SHIPSTABLE_HEAD	dta 2,4,4,6,6
 
 
 DRAWROCKET
+
     lda RANDOM
     and #30
     cmp #5
@@ -28,14 +59,14 @@ ROCKETBODY
 	lda SHIPSTABLE_BODY,Y
 	ldx ROW
 	inx
-	jsr zapisz_tile
+	jsr DRAWROW
 ROCKETHEAD
 	ldy SHIPTYPE
 	lda SHIPSTABLE_HEAD,Y
 	ldx ROW
 	inx
 	inx
-	jmp zapisz_tile
+	jmp DRAWROW
 dr1
     rts
 
@@ -56,30 +87,54 @@ dr1
 ;
 
 
-DRAWCANNONTABLE	
-    dta $ff-$30-$02+1,27
-    dta $ff-$60-$02+1,0
-    dta $ff-$30-$01+1,28
-    dta $ff-$60-$01+1,0
-    dta $ff-$30+1,29
-    dta $ff-$60+1,30
 
 DRAWCANNON
+	lda TMP
+	cmp #2
+	bcc dc1
 
-	ldx ROW
-	jsr set_tmp
-	dec TMP+1
+	inx
+	lda #29
+	jsr DRAWROW
 
-	ldx #0
-drc1
-	lda DRAWCANNONTABLE,X
-	tay
+	dec TMP
+	dec SCREENI
+
+	lda #28
+	jsr DRAWROW
+
+	dec TMP
+	dec SCREENI
+	lda #27
+	jsr DRAWROW
+
 	inx
-	lda DRAWCANNONTABLE,X
-	sta (TMP),Y
-	inx
-	cpx #12
-	bne drc1
+
+	lda #0
+	jsr DRAWROW
+
+	inc TMP
+	inc SCREENI
+
+	lda #0
+	jsr DRAWROW
+
+	inc TMP
+	inc SCREENI
+
+	lda #30
+	jsr DRAWROW
+;
+;    ldx #5
+;dc1
+;    lda DRAWCANNONTABLE_y,X
+;    tay
+;    lda DRAWCANNONTABLE_z,X
+;    sta (TMP),Y
+;    dex
+;    bpl dc1
+
+dc1
 	rts
 
 
@@ -89,12 +144,6 @@ drc1
 
 ;PROC TERRAIN=*()
 
-
-ship1	dta	02,03,02,04,03
-ship2	dta	12,11,11,13,13
-
-ROWOFFSET_h dta $01,$01,$00,$00,$00,$00,$00,$00,$01
-ROWOFFSET_l dta $50,$20,$F0,$C0,$90,$60,$30,$00,$80
 
 
 TERRAIN
@@ -109,14 +158,21 @@ TERRAIN
 ;  SCREEN(SCREENI)=0
 
 
-    ldy #0
-    ldx #8
+
+    ldx #6
 t1
-    jsr set_tmp
-    tya
-    sta(TMP),Y
+    lda ROWOFF+1,X
+    tay
+    lda #0
+    sta (SCREENI),Y
     dex
-    bpl t1
+    bne t1
+
+    lda #0
+    ldy #$20
+    sta (TMP),Y
+    ldy #$50
+    sta (TMP),Y
 
 
 ;
@@ -125,7 +181,6 @@ t1
 
     ldx NEXTROW
     stx ROW
-
 
 
 ;  IF LMS>STARTSCREEN+LOOP-$30 THEN
@@ -186,16 +241,16 @@ wo1
 	cpy #3
 	bne nie_tile_3
 	    lda #GLADE
-	    jmp zapisz_tile
+	    jmp DRAWROW
 
 nie_tile_3
 	lda #RFILL
 	ldx #5
 	stx NEXTROW
-	jsr zapisz_tile
+	jsr DRAWROW
 	lda #RSLOPE
 	ldx #6
-	jmp zapisz_tile
+	jmp DRAWROW
 nie6
 
 
@@ -216,16 +271,16 @@ nie6
 	bcs nie_tile_m_2
 	    lda #GLADE
 	    ldx #0
-	    jmp zapisz_tile
+	    jmp DRAWROW
 
 nie_tile_m_2
 	lda #LFILL
 	ldx #0
-	jsr zapisz_tile
+	jsr DRAWROW
 	lda #LSLOPE
 	ldx #1
 	stx NEXTROW
-	jmp zapisz_tile
+	jmp DRAWROW
 
 nie0
 
@@ -270,10 +325,10 @@ nie0
 		lda RANDOM
 		and #3
 		bne ic_m_2
-		    jsr DRAWCANNON
 		    lda #0
 		    sta ISCANNON
-		    rts
+		    jmp DRAWCANNON
+
 ic_m_2
 	    jmp DRAWROCKET
 r_w_5

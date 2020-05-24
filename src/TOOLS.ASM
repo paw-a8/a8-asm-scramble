@@ -111,6 +111,7 @@ RESETVARS
     lda #0
     sta ISCANNON
     sta NEXTROW
+    sta ROW
 
 	lda #<STARTSCREEN
 	sta LMS
@@ -142,37 +143,5 @@ RASTERBAROFF
     rts
 
 
-
-
-
-set_tmp			;(x-row)
-    lda SCREENI
-set_tmp_a
-    clc
-    adc ROWOFFSET_l,X
-    sta TMP
-    lda SCREENI+1
-    adc ROWOFFSET_h,X
-    sta TMP+1
-    rts
-
-
-zapisz_tile		;(a-tile, x-row)
-	tay
-	jsr set_tmp
-	tya
-	ldy #0
-	sta (TMP),Y
-	rts
-
-
-
-DRAWROW
-	ldx ROW
-	jmp zapisz_tile
-
-DRAWNEXTROW
-	ldx NEXTROW
-	jmp zapisz_tile
 
 

@@ -22,6 +22,11 @@
 
 VBLANKD
 
+    lda #0
+    sta DLICOLOR
+    lda $E
+    sta COLOR1
+
     inc RTCLOK
 
 	lda HSCROLI
@@ -51,6 +56,14 @@ vb2
 		lda SCREENI+1
 		adc #0
 		sta SCREENI+1
+
+		clc
+		lda SCREENI
+		sta TMP
+		lda SCREENI+1
+		adc #1
+		sta TMP+1
+
 
 	    lda #$F
 	    sta HSCROLI

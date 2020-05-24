@@ -1,44 +1,4 @@
-;;------------------------------------------------------------------------------
-;; INITIALIZING THE PROGRAM VARIABLES
-;;------------------------------------------------------------------------------
-;
-;PROC INIT=*()
-;  CARD POINTER ADDR
-;
-;  WAIT(1)           ; FRAME SYNCHRONIZATION
-;  SDMCTL=0          ; TURN ON ANTIC
-;  NMIEN=0           ; TURN OFF NON MASKABLE INTERRUPT
-;
-;  RESETVARS()
-;  TILE=0 HSCROLI=$F
-;
-;  SETBLOCK(TEXT,$30,0)
-;  SETBLOCK(STARTSCREEN,$800,0)
-;
-;  POKE(COLOR1,$E)   ; WHITE CHAR / TERRAIN
-;  POKE(COLOR2,$8C)  ; BACKGROUND / SKY
-;  POKE(COLOR4,0)    ; BORDER
-;  DLICOLOR=$8A
-;
-;  ADDR=CHARSET
-;  CHBAS=PEEK(@ADDR+1)
-;
-;  SDLSTL=DLADDR
-;  VDSLST=DLIAADDR
-;
-;  ADDR=VBLANKD
-;  LSB=PEEK(@ADDR) MSB=PEEK(@ADDR+1)
-;  OLDVBL=VVBLKD SETVBLK(7,MSB,LSB)
-;
-;  NMIEN=$C0         ; TURN ON NON MASKABLE INTERRUPT %110XXXXX
-;  SDMCTL=$2E        ; TURN ON ANTIC %XX101110
-;RET
-
-
 INIT
-;    lda #1
-;    jsr wait
-
 	lda #$0
 	sta DMACTL
 
@@ -79,7 +39,6 @@ ROMOFF
 	ldx #$8
 	jsr SETBLOCK
 
-
 	lda #$E
 	sta COLOR1
 	lda #$8C
@@ -87,7 +46,7 @@ ROMOFF
 	lda #$0
 	sta COLOR4
 
-	lda #$8A
+;	lda #0
 	sta DLICOLOR
 
 	lda >CHARSET
