@@ -15,31 +15,6 @@ LMS
 DLI_COLORS dta $8C,$8A,$88,$86,$84,$82,$0,$C,$A,$8,$6,$4,$2
 
 
-;DLIAADDR
-;DLIA
-;    ldy DLICOLOR
-;    lda DLI_COLORS,Y
-;    cpy #6
-;    bcs DLIB
-;	tax
-;	lda DLI_COLORS+1,Y
-;	sta WSYNC
-;	sta COLOR2
-;	sta WSYNC
-;	stx COLOR2
-;	sta WSYNC
-;	sta COLOR2
-;	cpy #5
-;	bne DLIC
-;	inc DLICOLOR
-;	sta COLOR2
-;	lda #$E
-;DLIB
-;    sta COLOR1
-;DLIC
-;    inc DLICOLOR
-;    jmp EXITDLI
-
 
 DLIAADDR
 DLIA

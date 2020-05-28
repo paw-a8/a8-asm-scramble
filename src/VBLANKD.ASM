@@ -3,20 +3,18 @@
 ;;------------------------------------------------------------------------------
 ;
 ;PROC VBLANKD=*()
-;  [PUSHAXYONSTACK]
+;  [PHAXY]
 ;  IF HSCROLI=$B THEN
-;    IF LMS=STARTSCREEN+LOOP+4 THEN
+;    IF LMS=LOOPEND THEN
 ;      DRAWLINE() RESETVARS()
 ;    ELSE
-;      LMS==+1 SCREENI==+1
+;      LMS==+1 SCREENI==+1    ; COARSE SCROLL
 ;    FI
 ;    HSCROLI=$F
 ;  FI
-;  HSCROL=HSCROLI HSCROLI==-1
-;  [PULLAXYFROMSTACK]
-;[JMPI OLDVBL]
-
-
+;  HSCROL=HSCROLI HSCROLI==-1 ; FINE SCROLL
+;  [PLAXY]
+;[JMP OLDVBL]
 
 
 
@@ -33,10 +31,10 @@ VBLANKD
 	cmp #$B
 	bne vb1
 	    lda LMS+1
-	    cmp #>(STARTSCREEN+LOOP+4)
+	    cmp #>(LOOPEND)
 	    bne vb2
 	    lda LMS
-	    cmp #<(STARTSCREEN+LOOP+4)
+	    cmp #<(LOOPEND)
 	    bne vb2
 		jsr DRAWLINE
 		jsr RESETVARS

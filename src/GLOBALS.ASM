@@ -38,4 +38,7 @@ NMIEN   equ $D40E
 
 .zpvar DLICOLOR .byte
 
+.zpvar COARSEI .byte
+.zpvar CHTMP	.byte
+
 

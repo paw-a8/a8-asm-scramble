@@ -18,6 +18,8 @@ ROMOFF
 	jsr RESETVARS
 	lda #0
 	sta TILE
+	sta COARSEI
+
 	lda #$F
 	sta HSCROLI
 
@@ -49,8 +51,9 @@ ROMOFF
 ;	lda #0
 	sta DLICOLOR
 
-	lda >CHARSET
+	lda >CHARSET1
 	sta CHBAS
+	sta CHTMP
 
 	lda <DLADDR
 	sta DLPTR

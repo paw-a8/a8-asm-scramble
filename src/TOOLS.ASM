@@ -118,9 +118,9 @@ RESETVARS
 	lda #>STARTSCREEN
 	sta LMS+1
 
-	lda #<(STARTSCREEN+STARTROW)
+	lda #<(STARTTERRAIN)
 	sta SCREENI
-	lda #>(STARTSCREEN+STARTROW)
+	lda #>(STARTTERRAIN)
 	sta SCREENI+1
 
 
@@ -141,7 +141,6 @@ RASTERBAROFF
     lda #0
     sta COLOR4
     rts
-
 
 
 
