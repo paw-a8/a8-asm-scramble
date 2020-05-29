@@ -27,9 +27,9 @@ VBLANKD
 
     inc RTCLOK
 
-	lda HSCROLI
-	cmp #$B
-	bne vb1
+    lda HSCROLI
+    cmp #$B
+    bne vb1
 	    lda LMS+1
 	    cmp #>(LOOPEND)
 	    bne vb2

@@ -1,11 +1,4 @@
-;                  0   1   2   3   4   5   6
-;ROWOFFSET_h dta $01,$01,$00,$00,$00,$00,$00
-;ROWOFFSET_l dta $50,$20,$F0,$C0,$90,$60,$30
-
-
 ROWOFF dta $50,$20,$F0,$C0,$90,$60,$30,$00
-
-
 
 
 DRAWNEXTROW
@@ -27,7 +20,6 @@ jeden
 
 
 
-
 ;;------------------------------------------------------------------------------
 ;; WORLD GENERATION PROCEDURE
 ;;------------------------------------------------------------------------------
@@ -35,34 +27,31 @@ jeden
 ;;------------------------------------------------------------------------------
 ;; PROCEDURE DRAWS ROCKETS
 ;;------------------------------------------------------------------------------
+
+
 ;PROC DRAWROCKET=*()
-;  SHIPTYPE=RANDOM & 30
-;  IF SHIPTYPE>8 THEN RET FI
-;  ROCKETBODY=SHIPSTABLE(SHIPTYPE)
-;  ROCKETHEAD=SHIPSTABLE(SHIPTYPE+1)
+;  SHIPTYPE=(RANDOM%1) & 31
+;  IF SHIPTYPE>7 THEN RET FI
+;  POKEADDR=SCREENI-$30 ELMPOKE(SHIPTYPE) SHIPTYPE==+1
+;  POKEADDR=SCREENI-$60 ELMPOKE(SHIPTYPE)
 ;RET
 ;
-
-SHIPSTABLE_BODY	dta 1,1,3,3,5
-SHIPSTABLE_HEAD	dta 2,4,4,6,6
 
 
 DRAWROCKET
 
     lda RANDOM
-    and #30
-    cmp #5
-    bcs dr1
-	sta SHIPTYPE
+    ora #1
+    and #7
 	tay
+	iny
+	sty SHIPTYPE
 ROCKETBODY
-	lda SHIPSTABLE_BODY,Y
 	ldx ROW
 	inx
 	jsr DRAWROW
 ROCKETHEAD
-	ldy SHIPTYPE
-	lda SHIPSTABLE_HEAD,Y
+	lda SHIPTYPE
 	ldx ROW
 	inx
 	inx
@@ -70,42 +59,40 @@ ROCKETHEAD
 dr1
     rts
 
+
+
+
 ;;------------------------------------------------------------------------------
 ;; PROCEDURE DRAWS ION CANNON STRUCTURE
 ;;------------------------------------------------------------------------------
 ;PROC DRAWCANNON=*()
-;  CTMP0=SCREENI+ROWOFFSET(ROW+1)
-;  CTMP1=SCREENI+ROWOFFSET(ROW+2)
-;
-;  SCREEN(CTMP0-2)=27
-;  SCREEN(CTMP1-2)=0
-;  SCREEN(CTMP0-1)=28
-;  SCREEN(CTMP1-1)=0
-;  SCREEN(CTMP0)=29
-;  SCREEN(CTMP1)=30
+;  POKEADDR=SCREENI-$32 ELMPOKEC($0A09)
+;  POKEADDR=SCREENI-$62 ELMPOKEC(0)
+;  POKEADDR=SCREENI-$30 ELMPOKE(11)
+;  POKEADDR=SCREENI-$60 ELMPOKE(12)
 ;RET
 ;
 
 
-
 DRAWCANNON
+
 	lda TMP
 	cmp #2
 	bcc dc1
 
 	inx
-	lda #29
+	lda #11
 	jsr DRAWROW
 
 	dec TMP
 	dec SCREENI
 
-	lda #28
+	lda #10
 	jsr DRAWROW
 
 	dec TMP
 	dec SCREENI
-	lda #27
+	lda #09
 	jsr DRAWROW
 
 	inx
@@ -122,17 +109,8 @@ DRAWCANNON
 	inc TMP
 	inc SCREENI
 
-	lda #30
+	lda #12
 	jsr DRAWROW
-;
-;    ldx #5
-;dc1
-;    lda DRAWCANNONTABLE_y,X
-;    tay
-;    lda DRAWCANNONTABLE_z,X
-;    sta (TMP),Y
-;    dex
-;    bpl dc1
 
 dc1
 	rts
@@ -167,12 +145,13 @@ t1
     sta (SCREENI),Y
     dex
     bne t1
-
     lda #0
     ldy #$20
     sta (TMP),Y
     ldy #$50
     sta (TMP),Y
+
+
 
 
 ;
@@ -195,11 +174,12 @@ t1
 ;
 
 
+
     lda LMS+1
-    cmp #>(STARTSCREEN+LOOP-$30)
+    cmp #>(TERRAINEND)
     bcc wo1
 	lda LMS
-	cmp #<(STARTSCREEN+LOOP-$30)
+	cmp #<(TERRAINEND)
 	bcc wo1
 	    ldx ROW
 	    beq r0
@@ -245,7 +225,8 @@ wo1
 
 nie_tile_3
 	lda #RFILL
-	ldx #5
+;	ldx #5
+	dex
 	stx NEXTROW
 	jsr DRAWROW
 	lda #RSLOPE
@@ -270,12 +251,12 @@ nie6
 	cpy #1
 	bcs nie_tile_m_2
 	    lda #GLADE
-	    ldx #0
+;	    ldx #0
 	    jmp DRAWROW
 
 nie_tile_m_2
 	lda #LFILL
-	ldx #0
+;	ldx #0
 	jsr DRAWROW
 	lda #LSLOPE
 	ldx #1
@@ -287,54 +268,35 @@ nie0
 
 
 
-;  IF (ROW>0) AND (ROW<6) THEN
-;    IF TILE<2 THEN
-;      DRAWROW=GLADE
-;      IF ROW<5 THEN
-;        ISCANONN==+1
-;        IF ISCANONN>2 THEN
-;          IF (RANDOM&3)=0 THEN
-;            DRAWCANNON() ISCANONN=0 RET
-;          FI
-;        FI
-;        DRAWROCKET() RET
-;      FI
-;    ELSEIF TILE=2 THEN
-;      ISCANONN=0 NEXTROW==-1
-;      DRAWROW=RSLOPE DRAWNEXTROW=RFILL
-;      RET
-;    ELSEIF TILE=3 THEN
-;      ISCANONN=0 NEXTROW==+1
-;      DRAWROW=LFILL DRAWNEXTROW=LSLOPE
-;      RET
-;    FI
+
+;  IF TILE=2 THEN
+;    ISCANONN=0 ROW==-1
+;    TERPOKE(RSLOPE) SCREENI==+$30 TERPOKE(RFILL)
+;    RET
+;  ELSEIF TILE=3 THEN
+;    ISCANONN=0 ROW==+1
+;    TERPOKE(LFILL) SCREENI==-$30 TERPOKE(LSLOPE)
+;    RET
 ;  FI
-;
 
-;row 1-5
-    cpy #2
-    bcs tile_w_2
-	lda #GLADE
-	jsr DRAWROW
-	cpx #5
-	bcs r_w_5
-	    inc ISCANNON
-	    lda ISCANNON
-	    cmp #3
-	    bcc ic_m_2
-		lda RANDOM
-		and #3
-		bne ic_m_2
-		    lda #0
-		    sta ISCANNON
-		    jmp DRAWCANNON
+;  TERPOKE(GLADE)
 
-ic_m_2
-	    jmp DRAWROCKET
-r_w_5
-tile_w_2
+ ; IF ROW<5 THEN
+    ; SETS UP BUILDINGS AND VEHICLES
+;    ISCANONN==+1
+;    IF ISCANONN>2 THEN
+;      IF (RANDOM&3)=0 THEN
+;        DRAWCANNON() ISCANONN=0
+;        RET
+;      FI
+;    FI
+;    DRAWROCKET()
+ ; FI
+
+
+
     cpy #2
-    bne tile_n_2
+    bne  tile_n_2
 	lda #0
 	sta ISCANNON
 	dec NEXTROW
@@ -342,8 +304,8 @@ tile_w_2
 	jsr DRAWROW
 	lda #RFILL
 	jmp DRAWNEXTROW
-tile_n_2
 
+tile_n_2
     cpy #3
     bne tile_n_3
 	lda #0
@@ -355,6 +317,27 @@ tile_n_2
 	jmp DRAWNEXTROW
 
 tile_n_3
+
+    lda #GLADE
+    jsr DRAWROW
+
+    cpx #5
+    bcs row_w_5
+	inc ISCANNON
+	lda ISCANNON
+	cmp #3
+	bcc ic_m_2
+	    lda RANDOM
+	    and #3
+	    bne ic_m_2
+	        lda #0
+	        sta ISCANNON
+	        jmp DRAWCANNON
+ic_m_2
+	jmp DRAWROCKET
+
+row_w_5
+
     rts
 
 
@@ -378,9 +361,9 @@ tile_n_3
 ;RET
 
 DRAWLINE
-	lda #<(STARTSCREEN+STARTROW+$120)
+	lda #<(STARTPLAIN)
 	sta TMP
-	lda #>(STARTSCREEN+STARTROW+$120)
+	lda #>(STARTPLAIN)
 	sta TMP+1
 	ldy #$30
 	ldx #$0

@@ -113,14 +113,14 @@ RESETVARS
     sta NEXTROW
     sta ROW
 
-	lda #<STARTSCREEN
+	lda <STARTSCREEN
 	sta LMS
-	lda #>STARTSCREEN
+	lda >STARTSCREEN
 	sta LMS+1
 
-	lda #<(STARTTERRAIN)
+	lda <STARTTERRAIN
 	sta SCREENI
-	lda #>(STARTTERRAIN)
+	lda >STARTTERRAIN
 	sta SCREENI+1
 
 

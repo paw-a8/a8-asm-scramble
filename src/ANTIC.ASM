@@ -28,7 +28,7 @@ DLIA
 	lda DLI_COLORS,Y
 
 	sta WSYNC
-	sta COLOR2
+	stx COLOR2
 
 
 	sta WSYNC

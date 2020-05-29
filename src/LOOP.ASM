@@ -25,6 +25,7 @@ MAINLOOP
     lda HSCROLI
     cmp #$B
     bne ml1
+
 	jsr TERRAIN
 
 ;      COARSEI==+1
@@ -49,6 +50,8 @@ MAINLOOP
 	beq chminus4
 	cmp #19
 	beq chminus4
+	cmp #20
+	bne ml1
 	lda #0
 	sta COARSEI
 chminus4
@@ -63,9 +66,9 @@ chplus4
 	inx
 	inx
 chend
-;	stx CHBAS
-;	stx CHTMP
-;	stx TEXT
+	stx CHBAS
+	stx CHTMP
+	stx TEXT
 ml1
     jsr RASTERBAROFF
     jmp MAINLOOP
